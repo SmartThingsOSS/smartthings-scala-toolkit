@@ -1,0 +1,111 @@
+---
+defaults: &defaults
+  working_directory: ~/build
+  docker:
+    - image: docker:latest
+
+  environment:
+    - DOCKER: "docker run --rm -w /mnt -v $CI_PROJECT_DIR:/mnt -v $CI_PROJECT_DIR/.ivy2:/root/.ivy2 -v $CI_PROJECT_DIR/.m2:/root/.m2"
+    - SBT: "hseeberger/scala-sbt:11.0.1_2.12.8_1.2.7 sbt"
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      - restore_cache:
+          keys:
+            - sbt-cache-{{ checksum "build.sbt" }}-{{ checksum "project/plugins.sbt" }}-{{ checksum "project/build.properties" }}
+
+      - run:
+          name: "Linting Checks"
+          command: $DOCKER $SBT scalastyle
+
+      - run:
+          name: "Compile"
+          command: $DOCKER $SBT compile
+
+      - run:
+          name: "Unit Tests"
+          command: $DOCKER $SBT test
+
+      - run:
+          name: "Package"
+          command: |
+            set -x
+            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
+            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
+            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
+            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" package
+
+      - save_cache:
+          key: sbt-cache-{{ checksum "build.sbt" }}-{{ checksum "project/plugins.sbt" }}-{{ checksum "project/build.properties" }}
+          root: ~/
+          paths:
+            - .ivy2/cache
+            - .sbt
+            - .m2
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - bin
+            - .sbt
+            - .ivy2/cache
+            - .m2
+            - scala-toolkit
+
+#  publish_snapshot:
+#    <<: *defaults
+#    steps:
+#      - attach_workspace:
+#          at: ~/
+#      - run:
+#          name: "Publish Snapshot"
+#          command: |
+#            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
+#            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
+#            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
+#            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" publish
+#
+#  publish_release:
+#    <<: *defaults
+#    steps:
+#      - attach_workspace:
+#          at: ~/
+#      - run:
+#          name: "Publish Release"
+#          command: |
+#            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
+#            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
+#            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
+#            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" publish
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only: /.*/
+#      - publish_snapshot:
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: master
+#      - publish_release:
+#          requires:
+#            - build
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/
