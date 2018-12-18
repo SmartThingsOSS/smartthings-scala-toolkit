@@ -6,7 +6,6 @@ import org.scalatest.{FunSpec, Matchers}
 import pureconfig.generic.auto._
 import scopt.OptionParser
 
-import scala.io.Source
 
 class ConfigurationSpec extends FunSpec with Matchers {
 

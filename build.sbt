@@ -1,8 +1,12 @@
 
+lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
+
 lazy val common = Seq(
   organization := "com.smartthings.scalakit",
   git.baseVersion := "1.0",
   scalaVersion := "2.12.7",
+  
+  compileScalastyle := scalastyle.in(Compile).toTask("").value,
 
   scalacOptions ++= Seq(
     "-deprecation",
@@ -11,12 +15,13 @@ lazy val common = Seq(
   
   javacOptions ++= Seq("-source", "8", "-target", "8", "-Xlint"),
 
-  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
-
   libraryDependencies ++= Seq(
     // Testing
     "org.scalatest" %% "scalatest"                  % "3.0.5" % Test,
   ),
+
+  // run style and header checks on test task
+  Test / test := (((Test / test) dependsOn compileScalastyle) dependsOn Compile / headerCheck).value,
   
   initialize := {
     if (sys.props("java.specification.version").toDouble < 1.8)
@@ -35,6 +40,9 @@ lazy val publishSettings =
       "Lance Linder",
       "lance@smartthings.com",
       url("https://github.com/llinder")),
+    organizationName := "SmartThings",
+    startYear := Some(2018),
+    licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
     pomIncludeRepository := (_ => false),
     publishMavenStyle := true,
     bintrayOrganization := Some("smartthingsoss"),

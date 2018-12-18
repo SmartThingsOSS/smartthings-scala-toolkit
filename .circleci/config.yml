@@ -15,10 +15,6 @@ jobs:
             - sbt-cache-{{ checksum "build.sbt" }}-{{ checksum "project/plugins.sbt" }}-{{ checksum "project/build.properties" }}
 
       - run:
-          name: "Linting Checks"
-          command: sbt scalastyle
-
-      - run:
           name: "Compile"
           command: sbt compile
 
