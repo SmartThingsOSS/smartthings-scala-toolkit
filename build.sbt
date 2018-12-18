@@ -24,6 +24,8 @@ lazy val common = Seq(
   },
 )
 
+lazy val settings = common ++ publishSettings
+
 lazy val publishSettings =
   Seq(
     homepage := Some(url("https://github.com/smartthingsoss/smartthings-scala-toolkit")),
@@ -34,21 +36,26 @@ lazy val publishSettings =
       "lance@smartthings.com",
       url("https://github.com/llinder")),
     pomIncludeRepository := (_ => false),
+    publishMavenStyle := true,
     bintrayOrganization := Some("smartthingsoss"),
     bintrayPackage := "smartthings-scala-toolkit"
   )
 
 lazy val root = project.in(file("."))
   .enablePlugins(GitBranchPrompt)
-  .settings(common)
+  .settings(settings)
   .settings(
-    name := "scala-toolkit-root"
+    name := "scala-toolkit-root",
+    publishArtifact := false,
+    bintrayRelease := false,
+    Compile / unmanagedSourceDirectories := Seq.empty,
+    Test / unmanagedSourceDirectories    := Seq.empty,
   )
   .aggregate(core, modules, config)
 
 lazy val modules = project.in(file("modules"))
   .dependsOn(core)
-  .settings(common)
+  .settings(settings)
   .settings(
     name := "scala-toolkit-modules",
     
@@ -59,7 +66,7 @@ lazy val modules = project.in(file("modules"))
   )
 
 lazy val core = project.in(file("core"))
-  .settings(common)
+  .settings(settings)
   .settings(
     name := "scala-toolkit-core",
 
@@ -69,7 +76,7 @@ lazy val core = project.in(file("core"))
   )
 
 lazy val config = project.in(file("config"))
-  .settings(common)
+  .settings(settings)
   .settings(
     name := "scala-toolkit-config",
 
