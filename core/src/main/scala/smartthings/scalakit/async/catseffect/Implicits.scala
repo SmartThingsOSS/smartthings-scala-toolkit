@@ -1,7 +1,7 @@
 package smartthings.scalakit.async.catseffect
 
 import cats.effect.{Async, IO}
-import smartthings.scat.core.async.AsyncForIO
+import smartthings.scalakit.async.AsyncForIO
 
 object Implicits {
 
