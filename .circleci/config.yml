@@ -50,31 +50,31 @@ jobs:
             - .m2
             - project
 
-#  publish_snapshot:
-#    <<: *defaults
-#    steps:
-#      - attach_workspace:
-#          at: ~/
-#      - run:
-#          name: "Publish Snapshot"
-#          command: |
-#            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
-#            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
-#            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
-#            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" publish
-#
-#  publish_release:
-#    <<: *defaults
-#    steps:
-#      - attach_workspace:
-#          at: ~/
-#      - run:
-#          name: "Publish Release"
-#          command: |
-#            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
-#            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
-#            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
-#            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" publish
+  publish_snapshot:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: "Publish Snapshot"
+          command: |
+            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
+            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
+            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
+            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" publish
+
+  publish_release:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: "Publish Release"
+          command: |
+            export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
+            export VERSION=$(echo $CIRCLE_SHA1 | tr / _)-SNAPSHOT
+            [ -n "$SEMVER" ] && export VERSION=$(echo $SEMVER | tr / _)
+            $SBT_BIN "set ThisBuild / version := \"$VERSION\"" publish
 
 workflows:
   version: 2
@@ -86,17 +86,17 @@ workflows:
               only: /.*/
             branches:
               only: /.*/
-#      - publish_snapshot:
-#          requires:
-#            - build
-#          filters:
-#            branches:
-#              only: master
-#      - publish_release:
-#          requires:
-#            - build
-#          filters:
-#            tags:
-#              only: /^v.*/
-#            branches:
-#              ignore: /.*/
+      - publish_snapshot:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - publish_release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/

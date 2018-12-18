@@ -11,6 +11,8 @@ lazy val common = Seq(
   
   javacOptions ++= Seq("-source", "8", "-target", "8", "-Xlint"),
 
+  licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
+
   libraryDependencies ++= Seq(
     // Testing
     "org.scalatest" %% "scalatest"                  % "3.0.5" % Test,
@@ -21,6 +23,20 @@ lazy val common = Seq(
       sys.error("Java 1.8 or newer is required for this project.")
   },
 )
+
+lazy val publishSettings =
+  Seq(
+    homepage := Some(url("https://github.com/smartthingsoss/smartthings-scala-toolkit")),
+    scmInfo := Some(ScmInfo(url("https://github.com/smartthingsoss/smartthings-scala-toolkit"),
+      "git@github.com:smartthingsoss/smartthings-scala-toolkit.git")),
+    developers += Developer("llinder",
+      "Lance Linder",
+      "lance@smartthings.com",
+      url("https://github.com/llinder")),
+    pomIncludeRepository := (_ => false),
+    bintrayOrganization := Some("smartthingsoss"),
+    bintrayPackage := "smartthings-scala-toolkit"
+  )
 
 lazy val root = project.in(file("."))
   .enablePlugins(GitBranchPrompt)
