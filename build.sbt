@@ -49,7 +49,6 @@ lazy val publishSettings =
     bintrayReleaseOnPublish := (if (version.value.endsWith("-SNAPSHOT")) false else true),
     bintrayOrganization := Some("smartthingsoss"),
     bintrayPackage := "smartthings-scala-toolkit",
-    bintrayReleaseOnPublish := true,
     credentials := List(Path.userHome / ".bintray" / ".artifactory")
       .filter(_.exists())
       .map(Credentials(_))
