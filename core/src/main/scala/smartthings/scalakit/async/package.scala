@@ -47,7 +47,15 @@ package object async {
 
     override def suspend[A](thunk: => Try[A]): Try[A] = thunk
 
-    override def bracketCase[A, B](acquire: Try[A])(use: A => Try[B])(release: (A, ExitCase[Throwable]) => Try[Unit]): Try[B] = ???
+    override def bracketCase[A, B](acquire: Try[A])(use: A => Try[B])(release: (A, ExitCase[Throwable]) => Try[Unit]): Try[B] = {
+      acquire match {
+        case Success(a) => use(a) match {
+          case s@Success(_) => release(a, ExitCase.Completed); s
+          case f@Failure(e) => release(a, ExitCase.Error(e)); f
+        }
+        case Failure(e) => Failure(e)
+      }
+    }
 
     override def flatMap[A, B](fa: Try[A])(f: A => Try[B]): Try[B] = fa.flatMap(f)
 
@@ -75,7 +83,8 @@ package object async {
 
     override def suspend[A](thunk: => IO[A]): IO[A] = thunk
 
-    override def bracketCase[A, B](acquire: IO[A])(use: A => IO[B])(release: (A, ExitCase[Throwable]) => IO[Unit]): IO[B] = ???
+    override def bracketCase[A, B](acquire: IO[A])(use: A => IO[B])(release: (A, ExitCase[Throwable]) => IO[Unit]): IO[B] =
+      acquire.bracketCase(use)(release)
 
     override def flatMap[A, B](fa: IO[A])(f: A => IO[B]): IO[B] =
       fa.flatMap(f)
@@ -116,7 +125,15 @@ package object async {
 
     override def suspend[A](thunk: => Future[A]): Future[A] = thunk
 
-    override def bracketCase[A, B](acquire: Future[A])(use: A => Future[B])(release: (A, ExitCase[Throwable]) => Future[Unit]): Future[B] = ???
+    override def bracketCase[A, B](acquire: Future[A])(use: A => Future[B])(release: (A, ExitCase[Throwable]) => Future[Unit]): Future[B] = {
+      acquire.transformWith {
+        case Success(a) => use(a).transformWith {
+          case Success(b) => release(a, ExitCase.complete).flatMap(_ => Future.successful(b))
+          case Failure(e) => release(a, ExitCase.error(e)).flatMap(_ => Future.failed(e))
+        }
+        case Failure(e) => Future.failed(e)
+      }
+    }
 
     override def flatMap[A, B](fa: Future[A])(f: A => Future[B]): Future[B] = {
       fa.flatMap(f)

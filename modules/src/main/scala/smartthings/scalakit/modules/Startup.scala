@@ -16,6 +16,10 @@
 
 package smartthings.scalakit.modules
 
-trait Module extends Startup with Shutdown {
+import cats.effect.Async
+
+trait Startup {
+
+  def startup[F[_]](implicit async: Async[F]): F[Unit] = async.unit
 
 }

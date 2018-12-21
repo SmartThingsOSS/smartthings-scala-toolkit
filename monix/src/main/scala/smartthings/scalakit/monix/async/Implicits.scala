@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package smartthings.scalakit.modules
+package smartthings.scalakit.monix.async
 
-trait Module extends Startup with Shutdown {
+import cats.effect.Async
+import monix.eval.Task
+
+object Implicits {
+
+  implicit val asyncForTask: Async[Task] = AsyncForTask
 
 }
