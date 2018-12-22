@@ -64,7 +64,7 @@ lazy val root = project.in(file("."))
     Compile / unmanagedSourceDirectories := Seq.empty,
     Test / unmanagedSourceDirectories    := Seq.empty,
   )
-  .aggregate(core, modules, config)
+  .aggregate(core, modules, config, monix)
 
 lazy val modules = project.in(file("modules"))
   .dependsOn(core)
@@ -97,4 +97,14 @@ lazy val config = project.in(file("config"))
       "com.github.pureconfig" %% "pureconfig"         % "0.10.1",
       "com.github.scopt" %% "scopt"                   % "3.7.0",
     ),
+  )
+
+lazy val monix = project.in(file("monix"))
+  .settings(settings)
+  .settings(
+    name := "scala-toolkit-monix",
+
+    libraryDependencies ++= Seq(
+      "io.monix" %% "monix" % "3.0.0-RC2",
+    )
   )
