@@ -31,7 +31,7 @@ lazy val common = Seq(
 
 lazy val settings = common ++ publishSettings
 
-lazy val publishSettings = 
+lazy val publishSettings =
   Seq(
     homepage := Some(url("https://github.com/smartthingsoss/smartthings-scala-toolkit")),
     scmInfo := Some(ScmInfo(url("https://github.com/smartthingsoss/smartthings-scala-toolkit"),
@@ -45,13 +45,18 @@ lazy val publishSettings =
     licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html")),
     pomIncludeRepository := (_ => false),
     publishMavenStyle := true,
-    publishTo := (if (version.value.endsWith("-SNAPSHOT")) Some("Artifactory Realm" at "http://oss.jfrog.org/artifactory/oss-snapshot-local") else None),
+    publishTo := (if (version.value.endsWith("-SNAPSHOT"))
+      Some("Artifactory Realm" at "http://oss.jfrog.org/artifactory/oss-snapshot-local")
+    else
+      Some("Bintray Realm" at "https://api.bintray.com/maven/smartthingsoss/maven/smartthings-scala-toolkit/;publish=1")),
     bintrayReleaseOnPublish := (if (version.value.endsWith("-SNAPSHOT")) false else true),
     bintrayOrganization := Some("smartthingsoss"),
     bintrayPackage := "smartthings-scala-toolkit",
-    credentials := List(Path.userHome / ".bintray" / ".artifactory")
-      .filter(_.exists())
-      .map(Credentials(_))
+    credentials := List(
+      Path.userHome / ".bintray" / ".credentials",
+      Path.userHome / ".bintray" / ".artifactory")
+        .filter(_.exists())
+        .map(Credentials(_))
   )
 
 lazy val root = project.in(file("."))
@@ -60,7 +65,6 @@ lazy val root = project.in(file("."))
   .settings(
     name := "scala-toolkit-root",
     publishArtifact := false,
-    bintrayRelease := false,
     Compile / unmanagedSourceDirectories := Seq.empty,
     Test / unmanagedSourceDirectories    := Seq.empty,
   )
