@@ -57,10 +57,10 @@ jobs:
             mkdir ~/.bintray/
             ARTIFACTORY_FILE=$HOME/.bintray/.artifactory
             cat <<EOF >$ARTIFACTORY_FILE
-            realm = Artifactory Realm
-            host = oss.jfrog.org
-            user = $BINTRAY_USER
-            password = $BINTRAY_PASS
+            realm=Artifactory Realm
+            host=oss.jfrog.org
+            user=$BINTRAY_USER
+            password=$BINTRAY_PASS
       - run:
           name: "Publish Snapshot"
           command: |
@@ -80,10 +80,10 @@ jobs:
             mkdir ~/.bintray/
             CREDENTIALS_FILE=$HOME/.bintray/.credentials
             cat <<EOF >CREDENTIALS_FILE
-            realm = Bintray API Realm
-            host = api.bintray.com
-            user = $BINTRAY_USER
-            password = $BINTRAY_PASS
+            realm=Bintray API Realm
+            host=api.bintray.com
+            user=$BINTRAY_USER
+            password=$BINTRAY_PASS
       - run:
           name: "Publish Release"
           command: |
