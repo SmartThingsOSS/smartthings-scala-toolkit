@@ -75,16 +75,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: "Setup"
-          command: |
-            mkdir ~/.bintray/
-            CREDENTIALS_FILE=$HOME/.bintray/.credentials
-            cat <<EOF >CREDENTIALS_FILE
-            realm=Bintray API Realm
-            host=api.bintray.com
-            user=$BINTRAY_USER
-            password=$BINTRAY_PASS
-      - run:
           name: "Publish Release"
           command: |
             export SEMVER=$(echo "$CIRCLE_TAG" | grep "^v.*$" | cut -c 2-)
