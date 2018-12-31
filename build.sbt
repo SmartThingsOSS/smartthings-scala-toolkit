@@ -48,7 +48,7 @@ lazy val publishSettings =
     publishTo := (if (version.value.endsWith("-SNAPSHOT"))
       Some("Artifactory Realm" at "http://oss.jfrog.org/artifactory/oss-snapshot-local")
     else
-      Some("Bintray Realm" at "https://api.bintray.com/maven/smartthingsoss/maven/smartthings-scala-toolkit/;publish=1")),
+      Some("Bintray API Realm" at "https://api.bintray.com/maven/smartthingsoss/maven/smartthings-scala-toolkit/;publish=1")),
     bintrayReleaseOnPublish := (if (version.value.endsWith("-SNAPSHOT")) false else true),
     bintrayOrganization := Some("smartthingsoss"),
     bintrayPackage := "smartthings-scala-toolkit",
