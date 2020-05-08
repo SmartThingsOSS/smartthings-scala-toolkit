@@ -4,20 +4,21 @@ lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 lazy val common = Seq(
   organization := "com.smartthings.scalakit",
   git.baseVersion := "1.0",
-  scalaVersion := "2.12.7",
-  
+  scalaVersion := "2.13.2",
+
+  crossScalaVersions := Seq("2.12.10", "2.13.2"),
+
   compileScalastyle := scalastyle.in(Compile).toTask("").value,
 
   scalacOptions ++= Seq(
-    "-deprecation",
-    "-Ypartial-unification"
+    "-deprecation"
   ),
   
   javacOptions ++= Seq("-source", "8", "-target", "8", "-Xlint"),
 
   libraryDependencies ++= Seq(
     // Testing
-    "org.scalatest" %% "scalatest"                  % "3.0.5" % Test,
+    "org.scalatest" %% "scalatest"                  % "3.1.1" % Test,
   ),
 
   // run style and header checks on test task
@@ -49,7 +50,7 @@ lazy val publishSettings =
       val original = publishTo.value
       Def.task {
         if (version.value.endsWith("-SNAPSHOT"))
-          Some("Artifactory Realm" at "http://oss.jfrog.org/artifactory/oss-snapshot-local")
+          Some("Artifactory Realm" at "https://oss.jfrog.org/artifactory/oss-snapshot-local")
         else
           original
       }
@@ -81,8 +82,8 @@ lazy val modules = project.in(file("modules"))
     name := "scala-toolkit-modules",
     
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-effect"                % "1.1.0",
-      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
+      "org.typelevel" %% "cats-effect"                % "2.1.3",
+      "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
     ),
   )
 
@@ -92,7 +93,7 @@ lazy val core = project.in(file("core"))
     name := "scala-toolkit-core",
 
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-effect"                % "1.0.0",
+      "org.typelevel" %% "cats-effect"                % "2.1.3",
     )
   )
 
@@ -102,8 +103,8 @@ lazy val config = project.in(file("config"))
     name := "scala-toolkit-config",
 
     libraryDependencies ++= Seq(
-      "com.github.pureconfig" %% "pureconfig"         % "0.10.1",
-      "com.github.scopt" %% "scopt"                   % "3.7.0",
+      "com.github.pureconfig" %% "pureconfig"         % "0.12.3",
+      "com.github.scopt" %% "scopt"                   % "3.7.1",
     ),
   )
 
@@ -113,6 +114,6 @@ lazy val monix = project.in(file("monix"))
     name := "scala-toolkit-monix",
 
     libraryDependencies ++= Seq(
-      "io.monix" %% "monix" % "3.0.0-RC2",
+      "io.monix" %% "monix" % "3.1.0",
     )
   )
